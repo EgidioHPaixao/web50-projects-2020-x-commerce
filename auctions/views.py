@@ -4,11 +4,39 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from django.forms import ModelForm
+from .models import Listing, User
 
+from django.contrib.auth.decorators import login_required
+
+class newListingForm(ModelForm):
+    class Meta:
+        model = Listing
+        fields = ['title', 'description', 'startingBid', 'category']
 
 def index(request):
     return render(request, "auctions/index.html")
+
+@login_required
+def newListing(request):
+    if request.method == "POST":        
+        form = newListingForm(request.POST)
+        if form.is_valid():
+            print(f"ta certo")
+            newListing = form.save(commit=False)
+            newListing.save()
+            return render(request, "auctions/newListing.html", {
+                "form": newListingForm(),
+                "success": True
+        })
+        else:
+            print(f"ta errado")
+        
+    else:
+        return render(request, "auctions/newListing.html", {
+            "form": newListingForm()
+        })
+
 
 
 def login_view(request):
