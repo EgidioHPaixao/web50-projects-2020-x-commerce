@@ -24,6 +24,7 @@ def newListing(request):
         if form.is_valid():
             print(f"ta certo")
             newListing = form.save(commit=False)
+            newListing.creator = request.user
             newListing.save()
             return render(request, "auctions/newListing.html", {
                 "form": newListingForm(),
@@ -37,7 +38,12 @@ def newListing(request):
             "form": newListingForm()
         })
 
-
+def activeListings(request):
+    listings = Listing.objects.all()
+    return render(request, "auctions/active.html", {
+        "listings": listings
+    })
+    
 
 def login_view(request):
     if request.method == "POST":
