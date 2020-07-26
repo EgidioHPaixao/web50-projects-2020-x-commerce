@@ -4,8 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from django.forms import ModelForm
-from .models import Listing, User
+from django.forms import ModelForm,  modelformset_factory
+from .models import Listing, User, Picture
 
 from django.contrib.auth.decorators import login_required
 
@@ -14,11 +14,18 @@ class newListingForm(ModelForm):
         model = Listing
         fields = ['title', 'description', 'startingBid', 'category']
 
+class newPictureForm(ModelForm):
+    class Meta:
+        model = Picture
+        fields = ['picture']
+
 def index(request):
     return render(request, "auctions/index.html")
 
 @login_required
 def newListing(request):
+    PictureFormSet = modelformset_factory(Picture,
+                                        form=newPictureForm, extra=3)
     if request.method == "POST":        
         form = newListingForm(request.POST)
         if form.is_valid():
@@ -28,6 +35,7 @@ def newListing(request):
             newListing.save()
             return render(request, "auctions/newListing.html", {
                 "form": newListingForm(),
+                "formset": formset,
                 "success": True
         })
         else:
@@ -35,7 +43,8 @@ def newListing(request):
         
     else:
         return render(request, "auctions/newListing.html", {
-            "form": newListingForm()
+            "form": newListingForm(),
+            "imageForm": PictureFormSet(queryset=Picture.objects.none())
         })
 
 def activeListings(request):

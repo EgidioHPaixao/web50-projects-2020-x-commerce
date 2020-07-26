@@ -35,3 +35,8 @@ class Comment(models.Model):
     created_date = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     auction = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments")
+
+class Picture(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="all_pictures")
+    picture = models.ImageField()
+    alt_text = models.CharField(max_length=140)

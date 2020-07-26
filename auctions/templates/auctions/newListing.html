@@ -8,8 +8,11 @@
     <div class="form-group">
         <form action="{% url 'newListing' %}" method="post">
             {% csrf_token %}
-            {{ form.as_table }}
+            {{ form }}
+            
+            {{ imageForm }}
             <input type = submit>
         </form>
+        
     </div>  
 {% endblock %}
