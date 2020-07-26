@@ -2,18 +2,22 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    <div class="card-deck">
-    {% for listing in listings %}
-        <div id="listing"></div>
-
-        <div class="card" style="width: 18rem;">
-            <img src="{{ listing.mainPicture }}" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">{{ listing.title }}</h5>
-              <p class="card-text">{{ listing.description }}</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
+    <div class="container">
+      <div class="row">
+            <div class="col-lg-12 d-flex align-items-stretch">
+              <div class="card-deck">
+              {% for listing in listings %}
+                  <div class="card" style="width: 30rem;">
+                      <img src="{{ listing.mainPicture.picture.url }}" class="card-img-top" alt="...">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <p class="card-text">{{ listing.description }}</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                      </div>
+                    </div>
+              {% endfor %}
+              </div>
             </div>
-          </div>
-    {% endfor %}
+      </div>
     </div>
 {% endblock %}

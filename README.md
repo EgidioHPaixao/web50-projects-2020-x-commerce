@@ -7,6 +7,14 @@ https://cs50.harvard.edu/web/2020/projects/2/commerce/
 
 * Added .gitignore file to keep database locally
 
+## Useful links
+
+https://studygyaan.com/django/how-to-upload-and-display-image-in-django
+
+https://stackoverflow.com/questions/34006994/how-to-upload-multiple-images-to-a-blog-post-in-django
+
+
+
  ## Troubleshoots
 
  #### The view didn't return an HttpResponse object. It returned None instead

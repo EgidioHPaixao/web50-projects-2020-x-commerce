@@ -14,10 +14,11 @@ class newListingForm(ModelForm):
         model = Listing
         fields = ['title', 'description', 'startingBid', 'category']
 
+
 class newPictureForm(ModelForm):
     class Meta:
         model = Picture
-        fields = ['picture']
+        fields = ['picture', 'alt_text']
 
 def index(request):
     return render(request, "auctions/index.html")
@@ -25,17 +26,27 @@ def index(request):
 @login_required
 def newListing(request):
     PictureFormSet = modelformset_factory(Picture,
-                                        form=newPictureForm, extra=3)
+                                        form=newPictureForm, extra=4)
     if request.method == "POST":        
-        form = newListingForm(request.POST)
-        if form.is_valid():
+        form = newListingForm(request.POST, request.FILES)
+        imagesForm = PictureFormSet(request.POST, request.FILES,
+                               queryset=Picture.objects.none())
+        if form.is_valid() and imagesForm.is_valid():
             print(f"ta certo")
             newListing = form.save(commit=False)
             newListing.creator = request.user
             newListing.save()
+
+            for form in imagesForm.cleaned_data:
+                if form:
+                    picture = form['picture']
+                    text = form['alt_text']
+                    newPicture = Picture(listing=newListing, picture=picture, alt_text=text)
+                    newPicture.save()
+
             return render(request, "auctions/newListing.html", {
                 "form": newListingForm(),
-                "formset": formset,
+                "imageForm": PictureFormSet(queryset=Picture.objects.none()),
                 "success": True
         })
         else:
@@ -49,6 +60,9 @@ def newListing(request):
 
 def activeListings(request):
     listings = Listing.objects.all()
+    for listing in listings:
+        listing.mainPicture = listing.all_pictures.first()
+        print(listing.mainPicture.picture.url)
     return render(request, "auctions/active.html", {
         "listings": listings
     })

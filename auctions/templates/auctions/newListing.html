@@ -6,12 +6,15 @@
         <h3>SUCCESSFULLY CREATED</h3>
     {% endif %}
     <div class="form-group">
-        <form action="{% url 'newListing' %}" method="post">
+        <form action="{% url 'newListing' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form }}
-            
-            {{ imageForm }}
-            <input type = submit>
+
+            {{ imageForm.management_form }}
+            {% for form in imageForm %}
+                {{ form }}
+            {% endfor %}
+            <input type = submit value="Upload">
         </form>
         
     </div>  
