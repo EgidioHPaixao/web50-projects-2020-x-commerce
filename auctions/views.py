@@ -59,7 +59,7 @@ def newListing(request):
         })
 
 def activeListings(request):
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(flActive=True)
     for listing in listings:
         listing.mainPicture = listing.all_pictures.first()
         print(listing.mainPicture.picture.url)
@@ -118,3 +118,7 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+@login_required
+def watchlist(request):
+    
