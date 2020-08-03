@@ -24,7 +24,11 @@
                       </div>
                       <div class="card-body">
                         <a href="#" class="card-link">Take my bid!</a>
-                        <a href="#" class="card-link">Add it to my watchlist</a>
+                        {% if listing.is_watched %}
+                          <a href="{% url 'change_watchlist' listing.id %}" class="card-link">Remove from my watchlist</a>
+                        {% else %}
+                          <a href="{% url 'change_watchlist' listing.id %}" class="card-link">Add it to my watchlist</a>
+                        {% endif %}
                       </div>
                       </div>
                     </div>

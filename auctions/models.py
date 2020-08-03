@@ -20,7 +20,7 @@ class Listing(models.Model):
     currentBid = models.FloatField(blank=True,null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE ,related_name="similar_listings")
     creator = models.ForeignKey(User, on_delete=models.PROTECT, related_name="all_creators_listings")
-    watchers = models.ManyToManyField(User, on_delete=models.CASCADE, related_name="watched_listings")
+    watchers = models.ManyToManyField(User, blank=True, related_name="watched_listings")
 
     def __str__(self):
         return f"{self.title} - {self.startingBid}"
@@ -41,6 +41,3 @@ class Picture(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="all_pictures")
     picture = models.ImageField(upload_to="images/")
     alt_text = models.CharField(max_length=140)
-
-class Watchlist(models.Model):
-    listing = models.ManyToManyField()

@@ -62,7 +62,10 @@ def activeListings(request):
     listings = Listing.objects.filter(flActive=True)
     for listing in listings:
         listing.mainPicture = listing.all_pictures.first()
-        print(listing.mainPicture.picture.url)
+        if request.user in listing.watchers.all():
+            listing.is_watched = True
+        else:
+            listing.is_watched = False
     return render(request, "auctions/active.html", {
         "listings": listings
     })
@@ -121,4 +124,22 @@ def register(request):
 
 @login_required
 def watchlist(request):
-    
+    listings = request.user.watched_listings.all()
+    for listing in listings:
+        listing.mainPicture = listing.all_pictures.first()
+        if request.user in listing.watchers.all():
+            listing.is_watched = True
+        else:
+            listing.is_watched = False
+    return render(request, "auctions/active.html", {
+        "listings": listings
+    })
+
+@login_required
+def change_watchlist(request, listing_id):
+    listing = Listing.objects.get(id=listing_id)
+    if request.user in listing.watchers.all():
+        listing.watchers.remove(request.user)
+    else:
+        listing.watchers.add(request.user)
+    return HttpResponseRedirect(reverse("watchlist"))

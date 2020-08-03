@@ -6,6 +6,7 @@ https://cs50.harvard.edu/web/2020/projects/2/commerce/
 ## Steps
 
 * Added .gitignore file to keep database locally
+* Install pillow to work with uploaded image files, running ``` python -m pip install Pillow ```
 
 ## Useful links
 

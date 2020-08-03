@@ -27,15 +27,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'newListing' %}">New Listing</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'watchlist' %}">My watchlist</a>
+                </li>
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Log In</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'register' %}">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'watchlist' %}">My watchlist</a>
                 </li>                
             {% endif %}
         </ul>
