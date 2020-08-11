@@ -23,7 +23,7 @@
                         </ul>
                       </div>
                       <div class="card-body">
-                        <a href="#" class="card-link">Take my bid!</a>
+                        <a href="{% url 'listing' listing.id %}" class="card-link">Take my bid!</a>
                         {% if listing.is_watched %}
                           <a href="{% url 'change_watchlist' listing.id %}" class="card-link">Remove from my watchlist</a>
                         {% else %}

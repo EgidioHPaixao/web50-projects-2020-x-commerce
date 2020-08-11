@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from django.forms import ModelForm,  modelformset_factory
-from .models import Listing, User, Picture
+from .models import Listing, User, Picture, Bid
 
 from django.contrib.auth.decorators import login_required
 
@@ -19,6 +19,11 @@ class newPictureForm(ModelForm):
     class Meta:
         model = Picture
         fields = ['picture', 'alt_text']
+
+class newBidForm(ModelForm):
+    class Meta:
+        model = Bid
+        fields = ['offer']
 
 def index(request):
     return render(request, "auctions/index.html")
@@ -143,3 +148,16 @@ def change_watchlist(request, listing_id):
     else:
         listing.watchers.add(request.user)
     return HttpResponseRedirect(reverse("watchlist"))
+
+## TODO if not authorized, it can't bid
+def listing(request, listing_id):
+    listing = Listing.objects.get(id=listing_id)    
+    return render(request, "auctions/listing.html", {
+        "listing": listing,
+        "listing_pictures": listing.all_pictures.all(),
+        "form": newBidForm()
+        
+    })
+
+def take_bid(request, listing_id):
+    pass
