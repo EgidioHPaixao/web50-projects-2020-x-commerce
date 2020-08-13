@@ -24,7 +24,7 @@ class newBidForm(ModelForm):
     class Meta:
         model = Bid
         fields = ['offer']
-
+        
 def index(request):
     return render(request, "auctions/index.html")
 
@@ -37,7 +37,7 @@ def newListing(request):
         imagesForm = PictureFormSet(request.POST, request.FILES,
                                queryset=Picture.objects.none())
         if form.is_valid() and imagesForm.is_valid():
-            print(f"ta certo")
+            print(request.user)
             newListing = form.save(commit=False)
             newListing.creator = request.user
             newListing.save()
@@ -155,9 +155,45 @@ def listing(request, listing_id):
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "listing_pictures": listing.all_pictures.all(),
-        "form": newBidForm()
-        
+        "form": newBidForm()        
     })
 
+@login_required
 def take_bid(request, listing_id):
-    pass
+    listing = Listing.objects.get(id=listing_id)
+    offer = float(request.POST['offer'])
+    if is_valid(offer,listing):
+        listing.currentBid = offer
+        form = newBidForm(request.POST)
+        newBid = form.save(commit=False)
+        newBid.auction = listing
+        newBid.user = request.user
+        newBid.save()
+        listing.save()
+        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+    else:
+        return render(request, "auctions/listing.html", {
+            "listing": listing,
+            "listing_pictures": listing.all_pictures.all(),
+            "form": newBidForm(),
+            "error_min_value": True        
+        })
+
+
+def is_valid(offer,listing):
+    if offer > listing.startingBid and (listing.currentBid is None or offer > listing.currentBid):
+        return True
+    else:
+        return False
+
+def close_listing(request,listing_id):
+    listing = Listing.objects.get(id=listing_id)
+    if request.user == listing.creator:
+        listing.flActive = False        
+        listing.buyer = Bid.objects.filter(auction=listing).last().user
+        print(listing.buyer)
+        listing.save()
+        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+    else:
+        listing.watchers.add(request.user)
+    return HttpResponseRedirect(reverse("watchlist"))
