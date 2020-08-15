@@ -19,20 +19,32 @@
                         <a class="btn btn-outline-info" href="{% url 'close_listing' listing.id %}" role="button">Close my bid</a>
                     {% endif %}
                 </h5>
+                
+                <a href="{% url 'change_watchlist' listing.id 'listing' %}" class="card-link">
+                    {% if listing.is_watched %}
+                        Remove from my watchlist
+                    {% else %}
+                        Add it to my watchlist
+                    {% endif %}
+                </a>
                 <p class="card-text">{{ listing.description }}</p>
                 <p class="card-text">Starting price: {{ listing.startingBid }}</p>
+                <p class="card-text">
                 {% if listing.currentBid is None %}
-                    <p class="card-text">Make the first bid of this listing!</p>
+                    {% if listing.creator != user  %}
+                        Make the first bid of this listing!
+                    {% else %}
+                    {% endif %}                
                 {% elif listing.buyer is not None %}
                     {% if listing.creator == user %}
-                        <p class="card-text">You've sold this item to {{listing.buyer}} for {{ listing.currentBid }}</p>
+                        You've sold this item to {{listing.buyer}} for {{ listing.currentBid }}
                     {% elif listing.buyer == user %}
-                        <p class="card-text">You've won this auction!</p>
+                        You've won this auction!
                     {% else %}
-                        <p class="card-text">This item is already sold</p>
+                        This item is already sold
                     {% endif %}
                 {% else %}
-                    <p class="card-text">Current price: {{ listing.currentBid }}</p>
+                    Current price: {{ listing.currentBid }}
                 {% endif %}
 
                 {% if error_min_value %}
@@ -41,7 +53,7 @@
                     </p>
                 {% endif %}
 
-                {% if listing.flActive %}
+                {% if listing.flActive and listing.creator != user %}
                     <div class="form-group">
                         <form action="{% url 'take_bid' listing.id %}" method="post">
                             {% csrf_token %}

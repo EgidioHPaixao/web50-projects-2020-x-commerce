@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from django.forms import ModelForm,  modelformset_factory
-from .models import Listing, User, Picture, Bid
+from .models import Listing, User, Picture, Bid, Category
 
 from django.contrib.auth.decorators import login_required
 
@@ -64,7 +64,12 @@ def newListing(request):
         })
 
 def activeListings(request):
-    listings = Listing.objects.filter(flActive=True)
+    category = request.GET.get('category', None)
+    if category is None:
+        listings = Listing.objects.filter(flActive=True)
+    else:
+        listings = Listing.objects.filter(flActive=True, category=category)
+    categories = Category.objects.all()
     for listing in listings:
         listing.mainPicture = listing.all_pictures.first()
         if request.user in listing.watchers.all():
@@ -72,7 +77,8 @@ def activeListings(request):
         else:
             listing.is_watched = False
     return render(request, "auctions/active.html", {
-        "listings": listings
+        "listings": listings,
+        "categories": categories
     })
     
 
@@ -135,23 +141,31 @@ def watchlist(request):
         if request.user in listing.watchers.all():
             listing.is_watched = True
         else:
-            listing.is_watched = False
+            listing.is_watched = False    
     return render(request, "auctions/active.html", {
         "listings": listings
     })
 
 @login_required
-def change_watchlist(request, listing_id):
-    listing = Listing.objects.get(id=listing_id)
-    if request.user in listing.watchers.all():
-        listing.watchers.remove(request.user)
+def change_watchlist(request, listing_id, reverse_method):
+    listing_object = Listing.objects.get(id=listing_id)
+    if request.user in listing_object.watchers.all():
+        listing_object.watchers.remove(request.user)
     else:
-        listing.watchers.add(request.user)
-    return HttpResponseRedirect(reverse("watchlist"))
+        listing_object.watchers.add(request.user)
+
+    if reverse_method == "listing":
+        return listing(request,listing_id)
+    else:
+        return HttpResponseRedirect(reverse(reverse_method))
 
 ## TODO if not authorized, it can't bid
 def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)    
+    if request.user in listing.watchers.all():
+        listing.is_watched = True
+    else:
+        listing.is_watched = False      
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "listing_pictures": listing.all_pictures.all(),

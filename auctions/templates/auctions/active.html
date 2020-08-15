@@ -2,8 +2,18 @@
 
 {% block body %}
     <h2>Active Listings</h2>
+    <!-- 
+    <div class="sidebar col-lg-2 col-md-3">
+      {% for category in categories %}
+      <div>
+          <a href="{% url 'activeListings' %}?category={{category.category}}">{{ category.category|upper }}</a>
+      </div>
+      {% endfor %}      
+    </div>
     <div class="container">
+    -->  
       <div class="row">
+        
             <div class="col-lg-12 d-flex align-items-stretch">
               <div class="card-deck">
               {% for listing in listings %}
@@ -24,11 +34,13 @@
                       </div>
                       <div class="card-body">
                         <a href="{% url 'listing' listing.id %}" class="card-link">Take my bid!</a>
-                        {% if listing.is_watched %}
-                          <a href="{% url 'change_watchlist' listing.id %}" class="card-link">Remove from my watchlist</a>
-                        {% else %}
-                          <a href="{% url 'change_watchlist' listing.id %}" class="card-link">Add it to my watchlist</a>
-                        {% endif %}
+                        <a href="{% url 'change_watchlist' listing.id 'activeListings' %}" class="card-link">
+                          {% if listing.is_watched %}
+                              Remove from my watchlist
+                          {% else %}
+                              Add it to my watchlist
+                          {% endif %}
+                      </a>
                       </div>
                       </div>
                     </div>
