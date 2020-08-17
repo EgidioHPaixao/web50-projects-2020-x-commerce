@@ -66,6 +66,28 @@
                 </div>
             </div>
         </div> 
-    </div>   
+    </div> 
+    <div class="row">
+        <h4>Comments</h4>
+        {% if listing.flActive and listing.creator != user %}
+            <div class="form-group">
+                <form action="{% url 'comment' listing.id %}" method="post">
+                    {% csrf_token %}
+                    {{ comment_form }}        
+                    <input type = submit value="Comment">
+                </form>                    
+            </div>            
+        {% endif %}
+        <!--
+        {% for comment in comments %}        
+            <div class="card mb-3">
+                <div class="card-body">
+                <h5 class="card-title"> {{ comment.comment }}</h5>                        
+                <p class="card-text">by {{ comment.user }}</p>
+                <p class="card-text">Created on {{ commment.created_date }}</p>        
+            </div>
+        {% endfor %}
+        -->
+    </div>  
 </div>    
 {% endblock %}

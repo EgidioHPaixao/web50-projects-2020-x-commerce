@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from django.forms import ModelForm,  modelformset_factory
-from .models import Listing, User, Picture, Bid, Category
+from .models import *
 
 from django.contrib.auth.decorators import login_required
 
@@ -24,6 +24,11 @@ class newBidForm(ModelForm):
     class Meta:
         model = Bid
         fields = ['offer']
+
+class newCommentForm(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['comment']
         
 def index(request):
     return render(request, "auctions/index.html")
@@ -64,14 +69,14 @@ def newListing(request):
         })
 
 def activeListings(request):
-    category = request.GET.get('category', None)
-    if category is None:
+    category_id = request.GET.get("category", None)
+    if category_id is None:
         listings = Listing.objects.filter(flActive=True)
     else:
-        listings = Listing.objects.filter(flActive=True, category=category)
+        listings = Listing.objects.filter(flActive=True, category=category_id)
     categories = Category.objects.all()
     for listing in listings:
-        listing.mainPicture = listing.all_pictures.first()
+        listing.mainPicture = listing.get_pictures.first()
         if request.user in listing.watchers.all():
             listing.is_watched = True
         else:
@@ -137,7 +142,7 @@ def register(request):
 def watchlist(request):
     listings = request.user.watched_listings.all()
     for listing in listings:
-        listing.mainPicture = listing.all_pictures.first()
+        listing.mainPicture = listing.get_pictures.first()
         if request.user in listing.watchers.all():
             listing.is_watched = True
         else:
@@ -159,17 +164,23 @@ def change_watchlist(request, listing_id, reverse_method):
     else:
         return HttpResponseRedirect(reverse(reverse_method))
 
-## TODO if not authorized, it can't bid
 def listing(request, listing_id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('login'))
+    
     listing = Listing.objects.get(id=listing_id)    
+    comments = Comment.objects.filter(listing=listing_id)    
+    print(comments)
     if request.user in listing.watchers.all():
         listing.is_watched = True
     else:
         listing.is_watched = False      
     return render(request, "auctions/listing.html", {
         "listing": listing,
-        "listing_pictures": listing.all_pictures.all(),
-        "form": newBidForm()        
+        "listing_pictures": listing.get_pictures.all(),
+        "form": newBidForm(),
+        "comments": comments,
+        "comment_form": newCommentForm()        
     })
 
 @login_required
@@ -188,7 +199,7 @@ def take_bid(request, listing_id):
     else:
         return render(request, "auctions/listing.html", {
             "listing": listing,
-            "listing_pictures": listing.all_pictures.all(),
+            "listing_pictures": listing.get_pictures.all(),
             "form": newBidForm(),
             "error_min_value": True        
         })
@@ -211,3 +222,13 @@ def close_listing(request,listing_id):
     else:
         listing.watchers.add(request.user)
     return HttpResponseRedirect(reverse("watchlist"))
+
+@login_required
+def comment(request, listing_id):
+    listing = Listing.objects.get(id=listing_id)
+    form = newCommentForm(request.POST)
+    newComment = form.save(commit=False)
+    newComment.user = request.user
+    newComment.listing = listing
+    newComment.save()
+    return HttpResponseRedirect(reverse("listing", args=[listing_id]))

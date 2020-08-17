@@ -36,9 +36,9 @@ class Comment(models.Model):
     comment = models.CharField(max_length=100)
     created_date = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    auction = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="get_comments")
 
 class Picture(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="all_pictures")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="get_pictures")
     picture = models.ImageField(upload_to="images/")
     alt_text = models.CharField(max_length=140)

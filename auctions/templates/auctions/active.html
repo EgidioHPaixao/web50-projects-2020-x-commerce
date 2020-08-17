@@ -2,16 +2,14 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    <!-- 
     <div class="sidebar col-lg-2 col-md-3">
       {% for category in categories %}
       <div>
-          <a href="{% url 'activeListings' %}?category={{category.category}}">{{ category.category|upper }}</a>
+          <a href="{% url 'activeListings'%}?category={{category.id}}">{{ category.category|upper }}</a>
       </div>
       {% endfor %}      
     </div>
     <div class="container">
-    -->  
       <div class="row">
         
             <div class="col-lg-12 d-flex align-items-stretch">
