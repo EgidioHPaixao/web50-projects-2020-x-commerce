@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from django.utils import timezone
 
 class User(AbstractUser):
     pass
@@ -14,7 +14,7 @@ class Category(models.Model):
 class Listing(models.Model):
     title = models.CharField(max_length=60)
     flActive = models.BooleanField(default=True)    
-    created_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField(default=timezone.now)
     description = models.CharField(null=True, max_length=300) 
     startingBid = models.FloatField()
     currentBid = models.FloatField(blank=True,null=True)
@@ -34,7 +34,7 @@ class Bid(models.Model):
 
 class Comment(models.Model):
     comment = models.CharField(max_length=100)
-    created_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="get_comments")
 

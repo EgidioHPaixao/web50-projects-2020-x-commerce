@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
+from django import forms
 from django.forms import ModelForm,  modelformset_factory
 from .models import *
 
@@ -29,9 +30,17 @@ class newCommentForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['comment']
+        widgets = {
+            'comment': forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Leave your comment here',
+            })
+        }
         
 def index(request):
-    return render(request, "auctions/index.html")
+    return activeListings(request)
+    
+
 
 @login_required
 def newListing(request):
@@ -42,7 +51,6 @@ def newListing(request):
         imagesForm = PictureFormSet(request.POST, request.FILES,
                                queryset=Picture.objects.none())
         if form.is_valid() and imagesForm.is_valid():
-            print(request.user)
             newListing = form.save(commit=False)
             newListing.creator = request.user
             newListing.save()
@@ -81,9 +89,10 @@ def activeListings(request):
             listing.is_watched = True
         else:
             listing.is_watched = False
-    return render(request, "auctions/active.html", {
+    return render(request, "auctions/index.html", {
         "listings": listings,
-        "categories": categories
+        "categories": categories,
+        "page_title": "Active Listings"
     })
     
 
@@ -147,8 +156,9 @@ def watchlist(request):
             listing.is_watched = True
         else:
             listing.is_watched = False    
-    return render(request, "auctions/active.html", {
-        "listings": listings
+    return render(request, "auctions/index.html", {
+        "listings": listings,
+        "page_title": "My watchlist"
     })
 
 @login_required
@@ -169,8 +179,6 @@ def listing(request, listing_id):
         return HttpResponseRedirect(reverse('login'))
     
     listing = Listing.objects.get(id=listing_id)    
-    comments = Comment.objects.filter(listing=listing_id)    
-    print(comments)
     if request.user in listing.watchers.all():
         listing.is_watched = True
     else:
@@ -179,7 +187,7 @@ def listing(request, listing_id):
         "listing": listing,
         "listing_pictures": listing.get_pictures.all(),
         "form": newBidForm(),
-        "comments": comments,
+        "comments": listing.get_comments.all(),
         "comment_form": newCommentForm()        
     })
 

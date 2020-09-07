@@ -1,5 +1,7 @@
 {% extends "auctions/layout.html" %}
 
+{% block title%}New Listing{% endblock %}
+
 {% block body %}
     <h2>New Listing</h2>
     {% if success %}
@@ -8,13 +10,13 @@
     <div class="form-group">
         <form action="{% url 'newListing' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form }}
+            {{ form.as_p }}
 
             {{ imageForm.management_form }}
             {% for form in imageForm %}
-                {{ form }}
+                {{ form.as_p }}
             {% endfor %}
-            <input type = submit value="Upload">
+            <input type=submit value="Upload">
         </form>
         
     </div>  

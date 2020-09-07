@@ -3,91 +3,90 @@
 {% block body %}
 <div class="container">
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            <div class="card mb-3">
-                {% for item in listing_pictures %}
-                    <img class="card-img-top" src="{{ item.picture.url }}" alt="{{ item.alt_text }}">
-                {% endfor %}
-            </div>  
-        </div> 
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            <div class="card mb-3">
-                <div class="card-body">
-                <h5 class="card-title">
-                    {{ listing.title }}
-                    {% if  listing.creator == user and listing.flActive %}
-                        <a class="btn btn-outline-info" href="{% url 'close_listing' listing.id %}" role="button">Close my bid</a>
-                    {% endif %}
-                </h5>
-                
-                <a href="{% url 'change_watchlist' listing.id 'listing' %}" class="card-link">
-                    {% if listing.is_watched %}
-                        Remove from my watchlist
-                    {% else %}
-                        Add it to my watchlist
-                    {% endif %}
-                </a>
-                <p class="card-text">{{ listing.description }}</p>
-                <p class="card-text">Starting price: {{ listing.startingBid }}</p>
-                <p class="card-text">
-                {% if listing.currentBid is None %}
-                    {% if listing.creator != user  %}
-                        Make the first bid of this listing!
-                    {% else %}
-                    {% endif %}                
-                {% elif listing.buyer is not None %}
-                    {% if listing.creator == user %}
-                        You've sold this item to {{listing.buyer}} for {{ listing.currentBid }}
-                    {% elif listing.buyer == user %}
-                        You've won this auction!
-                    {% else %}
-                        This item is already sold
-                    {% endif %}
+        <div class="card border-light col col-lg-8 col-md-8 col-sm-12">
+            {% for item in listing_pictures %}
+                <img class="card-img-top" src="{{ item.picture.url }}" alt="{{ item.alt_text }}">
+            {% empty %}
+                <img class="card-img-top" src="https://www.inbounder.com.br/wp-content/themes/inbounder/images/no-image/No-Image-Found-400x264.png" alt="No image found.">
+            {% endfor %}                
+        </div>  
+
+        <div class="card border-primary col col-12 col-lg-4 col-md-4 col-sm-12">
+            <div class="card-body">
+            <h5 class="card-title">
+                {{ listing.title }}
+                {% if  listing.creator == user and listing.flActive %}
+                    <a class="btn btn-outline-info" href="{% url 'close_listing' listing.id %}" role="button">Close my bid</a>
+                {% endif %}
+            </h5>
+            
+            <a href="{% url 'change_watchlist' listing.id 'listing' %}" class="card-link">
+                {% if listing.is_watched %}
+                    Remove from my watchlist
                 {% else %}
-                    Current price: {{ listing.currentBid }}
+                    Add it to my watchlist
                 {% endif %}
+            </a>
+            <p class="card-text">{{ listing.description }}</p>
+            <p class="card-text">Starting price: {{ listing.startingBid }}</p>
+            <p class="card-text">
+            {% if listing.currentBid is None %}
+                {% if listing.creator != user  %}
+                    Make the first bid of this listing!
+                {% else %}
+                {% endif %}                
+            {% elif listing.buyer is not None %}
+                {% if listing.creator == user %}
+                    You've sold this item to {{listing.buyer}} for {{ listing.currentBid }}
+                {% elif listing.buyer == user %}
+                    You've won this auction!
+                {% else %}
+                    This item is already sold
+                {% endif %}
+            {% else %}
+                Current price: {{ listing.currentBid }}
+            {% endif %}
 
-                {% if error_min_value %}
-                    <p class="card-text">
-                        <div class="alert alert-warning" role="alert">Your bid must be bigger than {{ listing.currentBid }}</div>
-                    </p>
-                {% endif %}
+            {% if error_min_value %}
+                <p class="card-text">
+                    <div class="alert alert-warning" role="alert">Your bid must be bigger than {{ listing.currentBid }}</div>
+                </p>
+            {% endif %}
 
-                {% if listing.flActive and listing.creator != user %}
-                    <div class="form-group">
-                        <form action="{% url 'take_bid' listing.id %}" method="post">
-                            {% csrf_token %}
-                            {{ form }}        
-                            <input type = submit value="Upload">
-                        </form>                    
-                    </div>            
-                {% endif %}
-                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            {% if listing.flActive and listing.creator != user %}
+                <div class="form-group">
+                    <form action="{% url 'take_bid' listing.id %}" method="post">
+                        {% csrf_token %}
+                        {{ form }}        
+                        <input type = submit value="Upload">
+                    </form>                    
+                </div>            
+            {% endif %}
+            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+        </div>
+
+        <div class="card border-light col col-12 col-lg-12 col-md-12 col-sm-12">
+            <h4>Comments</h4>
+            {% if listing.flActive and listing.creator != user %}
+                <div class="form-group">
+                    <form action="{% url 'comment' listing.id %}" method="post">
+                        {% csrf_token %}
+                        {{ comment_form }}        
+                        <input type = submit value="Comment">
+                    </form>                    
+                </div>            
+            {% endif %}
+            {% for comment in comments %}        
+                <div class="card border-scondary ">
+                <div class="card-header">{{ comment.user|default:"Unknown auctor" }} commented on {{ commment.created_date  }}</div>
+                    <div class="card-body">
+                        <h5 class="card-title"> {{ comment.comment }}</h5>                        
+                    </div>
                 </div>
-            </div>
-        </div> 
+            {% endfor %}
+        </div>
     </div> 
-    <div class="row">
-        <h4>Comments</h4>
-        {% if listing.flActive and listing.creator != user %}
-            <div class="form-group">
-                <form action="{% url 'comment' listing.id %}" method="post">
-                    {% csrf_token %}
-                    {{ comment_form }}        
-                    <input type = submit value="Comment">
-                </form>                    
-            </div>            
-        {% endif %}
-        <!--
-        {% for comment in comments %}        
-            <div class="card mb-3">
-                <div class="card-body">
-                <h5 class="card-title"> {{ comment.comment }}</h5>                        
-                <p class="card-text">by {{ comment.user }}</p>
-                <p class="card-text">Created on {{ commment.created_date }}</p>        
-            </div>
-        {% endfor %}
-        -->
-    </div>  
+      
 </div>    
 {% endblock %}

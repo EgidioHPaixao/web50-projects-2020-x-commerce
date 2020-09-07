@@ -45,6 +45,29 @@ In views.py, just do ```request.GET.get("category", None)```. This method gives 
         newItem.save()
 ```
 
+#### TemplateSyntaxError at /auction/active default requires 2 arguments, 1 provided
+
+Probably you are using the django template engine and you've put a whitespacce between arguments. For example, when there is no image to be shown, django will show a generic image:
+
+This ir correct:
+```
+{{ image_path|default:"https://www.inbounder.com.br/wp-content/themes/inbounder/images/no-image/No-Image-Found-400x264.png"}}
+```
+But if I put a whitespace between the variable and the default, it won't work:
+```
+{{ image_path | default:"https://www.inbounder.com.br/wp-content/themes/inbounder/images/no-image/No-Image-Found-400x264.png"}}
+```
+
+#### HTML not loading local CSS file
+
+I was working in my local CSS file, but nothing was changing on my website.
+The solution was to add "/" in the end of the "link" tag that makes reference to my css file
+
+Before: ```<link rel="stylesheet" href="{% static 'auctions/styles.css' %}">```
+
+After : ```<link rel="stylesheet" href="{% static 'auctions/styles.css' %}/">```
+
+
 #### Page not found, but path is correctly set on urls.py
 ![][404_example_base64]
 

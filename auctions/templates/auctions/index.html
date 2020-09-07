@@ -1,7 +1,52 @@
 {% extends "auctions/layout.html" %}
 
-{% block body %}
-    <h2>Active Listings</h2>
+{% block title%}{{ page_title}}{% endblock %}
 
-    TODO
+{% block body %}
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#">CATEGORIES</a>
+        </li>
+      {% for category in categories %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'activeListings'%}?category={{category.id}}">{{ category.category|upper }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <hr>
+    <div class="container">        
+        <div class="row">
+            {% for listing in listings %}
+                <div class="card border-light col col-lg-4 col-md-6 col-sm-6 col-12">              
+                    <a href="{% url 'listing' listing.id %}" class="card-link">
+                    <img src="{{ listing.mainPicture.picture.url|default:"https://www.inbounder.com.br/wp-content/themes/inbounder/images/no-image/No-Image-Found-400x264.png" }}"
+                        class="card-img-top" alt="{{ listing.mainPicture.alt_text|default:"No image found." }}">
+                    </a>
+                    <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item card-title"><h5> {{ listing.title }}</h5></li>
+                        <li class="list-group-item card-text"><p>{{ listing.description }}</p></li>
+                        <li class="list-group-item">$ 
+                            {%if listing.currentBid %} 
+                            {{ listing.currentBid }}
+                            {% else %}  
+                            {{ listing.startingBid }}
+                            {% endif %}
+                        </li>
+                    </ul>
+                    </div>
+                    <div class="card-body">
+                    <a href="{% url 'listing' listing.id %}" class="card-link">Take my bid!</a>
+                    <a href="{% url 'change_watchlist' listing.id 'activeListings' %}" class="card-link">
+                        {% if listing.is_watched %}
+                            Remove from my watchlist
+                        {% else %}
+                            Add it to my watchlist
+                        {% endif %}
+                    </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

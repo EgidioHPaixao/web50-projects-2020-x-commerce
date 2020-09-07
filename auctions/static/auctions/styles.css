@@ -1,3 +1,20 @@
 body {
     padding: 10px;
-}
+}  
+
+input[type=text],input[type=number],input[type=password] {
+    border: none;
+    border-bottom: 2px solid lightgray;
+    width: 20%;
+  }
+
+
+input[type=button], input[type=submit], input[type=reset], input[type=file] {
+    background-color: lightsteelblue;
+    border: none;
+    color: white;
+    padding: 8px 25px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
