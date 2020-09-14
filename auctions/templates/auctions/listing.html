@@ -49,7 +49,7 @@
 
             {% if error_min_value %}
                 <p class="card-text">
-                    <div class="alert alert-warning" role="alert">Your bid must be bigger than {{ listing.currentBid }}</div>
+                    <div class="alert alert-warning" role="alert">Your bid must be bigger than {{ listing.currentBid|default:listing.startingBid }}</div>
                 </p>
             {% endif %}
 
@@ -58,15 +58,14 @@
                     <form action="{% url 'take_bid' listing.id %}" method="post">
                         {% csrf_token %}
                         {{ form }}        
-                        <input type = submit value="Upload">
+                        <input type = submit value="Bid on it!">
                     </form>                    
                 </div>            
             {% endif %}
-            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            <p class="card-text"><small class="text-muted">Created on {{ listing.created_date|date:"M, d" }} </small></p>
             </div>
         </div>
 
-        <!-- TODO show date from comments and listing -->            
         <div class="card border-light col col-12 col-lg-12 col-md-12 col-sm-12">
             <h4>Comments</h4>
             {% if listing.flActive and listing.creator != user %}
@@ -80,7 +79,7 @@
             {% endif %}
             {% for comment in comments %}        
                 <div class="card border-scondary ">
-                <div class="card-header">{{ comment.user|default:"Unknown auctor" }} commented on {{ commment.created_date  }}</div>
+                <div class="card-header">{{ comment.user|default:"Unknown auctor" }} commented on {{ comment.createdDate|date:"M, d"  }}</div>
                     <div class="card-body">
                         <h5 class="card-title"> {{ comment.comment }}</h5>                        
                     </div>

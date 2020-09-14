@@ -34,9 +34,13 @@ class Bid(models.Model):
 
 class Comment(models.Model):
     comment = models.CharField(max_length=100)
-    created_date = models.DateTimeField(default=timezone.now)
+    createdDate = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="get_comments")
+
+    def get_creation_date(self):
+        return self.createdDate.strftime('%B %d %Y')
+
 
 class Picture(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="get_pictures")

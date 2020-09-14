@@ -18,3 +18,15 @@ input[type=button], input[type=submit], input[type=reset], input[type=file] {
     margin: 4px 2px;
     cursor: pointer;
   }
+
+img:hover {
+    transform: scale(1.05);
+  }
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+a:hover {
+  background-color: honeydew;
+}

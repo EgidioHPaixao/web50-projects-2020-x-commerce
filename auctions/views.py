@@ -68,8 +68,11 @@ def newListing(request):
                 "success": True
         })
         else:
-            print(f"ta errado")
-        
+            return render(request, "auctions/newListing.html", {
+                "form": newListingForm(),
+                "imageForm": PictureFormSet(queryset=Picture.objects.none())
+            })
+
     else:
         return render(request, "auctions/newListing.html", {
             "form": newListingForm(),
@@ -182,7 +185,7 @@ def listing(request, listing_id):
     if request.user in listing.watchers.all():
         listing.is_watched = True
     else:
-        listing.is_watched = False      
+        listing.is_watched = False    
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "listing_pictures": listing.get_pictures.all(),
@@ -224,7 +227,6 @@ def close_listing(request,listing_id):
     if request.user == listing.creator:
         listing.flActive = False        
         listing.buyer = Bid.objects.filter(auction=listing).last().user
-        print(listing.buyer)
         listing.save()
         return HttpResponseRedirect(reverse("listing", args=[listing_id]))
     else:
