@@ -153,6 +153,7 @@ def register(request):
 @login_required
 def watchlist(request):
     listings = request.user.watched_listings.all()
+    categories = Category.objects.all()
     for listing in listings:
         listing.mainPicture = listing.get_pictures.first()
         if request.user in listing.watchers.all():
@@ -161,7 +162,8 @@ def watchlist(request):
             listing.is_watched = False    
     return render(request, "auctions/index.html", {
         "listings": listings,
-        "page_title": "My watchlist"
+        "page_title": "My watchlist",
+        "categories": categories
     })
 
 @login_required
@@ -217,7 +219,7 @@ def take_bid(request, listing_id):
 
 
 def is_valid(offer,listing):
-    if offer > listing.startingBid and (listing.currentBid is None or offer > listing.currentBid):
+    if offer >= listing.startingBid and (listing.currentBid is None or offer > listing.currentBid):
         return True
     else:
         return False

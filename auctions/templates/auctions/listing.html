@@ -16,7 +16,7 @@
             <h5 class="card-title">
                 {{ listing.title }}
                 {% if  listing.creator == user and listing.flActive %}
-                    <a class="btn btn-outline-info" href="{% url 'close_listing' listing.id %}" role="button">Close my bid</a>
+                    <a class="btn btn-outline-info" href="{% url 'close_listing' listing.id %}" role="button">Close</a>
                 {% endif %}
             </h5>
             
@@ -68,7 +68,7 @@
 
         <div class="card border-light col col-12 col-lg-12 col-md-12 col-sm-12">
             <h4>Comments</h4>
-            {% if listing.flActive and listing.creator != user %}
+            {% if listing.flActive %}
                 <div class="form-group">
                     <form action="{% url 'comment' listing.id %}" method="post">
                         {% csrf_token %}

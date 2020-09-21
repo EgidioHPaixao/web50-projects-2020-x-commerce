@@ -37,7 +37,11 @@
                     </div>
                     <div class="card-body">
                     <a href="{% url 'listing' listing.id %}" class="card-link">Take my bid!</a>
-                    <a href="{% url 'change_watchlist' listing.id 'activeListings' %}" class="card-link">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'change_watchlist' listing.id 'activeListings' %}" class="card-link">
+                    {% else %}
+                        <a href="{% url 'login' %}" class="card-link">
+                    {% endif %}
                         {% if listing.is_watched %}
                             Remove from my watchlist
                         {% else %}
